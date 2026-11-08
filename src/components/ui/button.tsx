@@ -1,53 +1,111 @@
-import type { ButtonHTMLAttributes } from "react";
+import * as React from "react";
+import Link from "next/link";
+import { ArrowIcon, BoltIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant = "primary" | "iconBtn" | "split";
+
+export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
+  /**
+   * `primary` — solid blue bar with a leading icon and a label.
+   * `secondary` — white icon-only square.
+   * `split` — white label block with a blue icon square attached to its right.
+   */
+  variant?: ButtonVariant;
+  /** Overrides the default glyph: a bolt on `primary`, an arrow elsewhere. */
+  icon?: React.ReactNode;
+}
+
+export interface ButtonLinkProps extends React.ComponentPropsWithoutRef<
+  typeof Link
+> {
+  variant?: ButtonVariant;
+  icon?: React.ReactNode;
+}
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50";
+  "group inline-flex items-center justify-center cursor-pointer text-sm font-semibold tracking-[0.08em] uppercase transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:pointer-events-none disabled:opacity-50";
 
-const variantStyles: Record<ButtonVariant, string> = {
-  // Black by default, turns red on hover.
-  primary:
-    "bg-foreground text-background hover:bg-primary hover:text-primary-foreground",
-  // Gray outline, fills with light red on hover.
-  secondary:
-    "border border-input bg-transparent text-foreground hover:border-primary hover:bg-primary/10 hover:text-primary",
-  outline:
-    "border border-input bg-transparent text-foreground hover:border-primary hover:bg-primary/10 hover:text-primary",
-  ghost:
-    "bg-transparent text-foreground hover:bg-primary/10 hover:text-primary",
-};
+function getVariantClasses(variant: ButtonVariant) {
+  if (variant === "iconBtn") {
+    return "text-ink size-12 shrink-0 bg-white p-3 hover:bg-neutral-100";
+  }
 
-const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-9 px-4 text-sm",
-  md: "h-11 px-6 text-sm",
-  lg: "h-12 px-8 text-base",
-};
+  if (variant === "split") {
+    return "text-ink bg-white p-1 hover:bg-neutral-100";
+  }
 
-/**
- * Shared class string so anchors (`<a>`) and buttons can look identical.
- */
-export function buttonVariants(opts?: {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  className?: string;
+  return "bg-brand hover:bg-brand-hover gap-2.5 px-5 py-3 font-extrabold text-white";
+}
+
+function ButtonContent({
+  variant,
+  icon,
+  children,
+}: {
+  variant: ButtonVariant;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
 }) {
-  const { variant = "primary", size = "md", className } = opts ?? {};
-  return cn(base, variantStyles[variant], sizeStyles[size], className);
+  if (variant === "iconBtn") {
+    return icon ?? <ArrowIcon className="size-4" />;
+  }
+
+  if (variant === "split") {
+    return (
+      <>
+        <span className="py-3.5 pr-8 pl-12">{children}</span>
+        <span className="bg-brand group-hover:bg-brand-hover grid w-12 shrink-0 place-items-center self-stretch text-white transition-colors">
+          {icon ?? <ArrowIcon className="size-4" />}
+        </span>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {icon ?? <BoltIcon className="size-6 shrink-0" />}
+      {children}
+    </>
+  );
 }
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-}
-
-export function Button({ variant, size, className, ...props }: ButtonProps) {
+export function Button({
+  variant = "primary",
+  icon,
+  className,
+  children,
+  type = "button",
+  ...props
+}: ButtonProps) {
   return (
     <button
-      className={buttonVariants({ variant, size, className })}
+      type={type}
+      className={cn(base, getVariantClasses(variant), className)}
       {...props}
-    />
+    >
+      <ButtonContent variant={variant} icon={icon}>
+        {children}
+      </ButtonContent>
+    </button>
+  );
+}
+
+export function ButtonLink({
+  variant = "primary",
+  icon,
+  className,
+  children,
+  ...props
+}: ButtonLinkProps) {
+  return (
+    <Link
+      className={cn(base, getVariantClasses(variant), className)}
+      {...props}
+    >
+      <ButtonContent variant={variant} icon={icon}>
+        {children}
+      </ButtonContent>
+    </Link>
   );
 }

@@ -1,172 +1,141 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { Container } from "@/components/ui/container";
-import { buttonVariants } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { cn } from "@/lib/utils";
 
-const EASE = [0.21, 0.47, 0.32, 0.98] as const;
+type NavItem = {
+  label: string;
+  href: string;
+};
+
+const navItems: NavItem[] = [
+  { label: "What we build", href: "#what-we-build" },
+  { label: "How we work", href: "#how-we-work" },
+  { label: "Our work", href: "#our-work" },
+  { label: "Consultation", href: "#consultation" },
+  { label: "Enquire", href: "/enquiry" },
+];
+
+const linkClasses =
+  "inline-flex items-center gap-1 text-[14px] font-medium text-white transition-colors hover:text-white/85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60";
 
 export function Header() {
-  const [active, setActive] = useState("");
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const [open, setOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
 
-  // Elevate the bar with a shadow once the page scrolls.
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+  React.useEffect(() => {
+    const updateScrolledState = () => setIsScrolled(window.scrollY > 16);
+
+    updateScrolledState();
+    window.addEventListener("scroll", updateScrolledState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrolledState);
   }, []);
 
-  // Scroll-spy: highlight the nav link for the section in view.
-  useEffect(() => {
-    const sections = siteConfig.nav
-      .map((n) => document.getElementById(n.href.replace("#", "")))
-      .filter((el): el is HTMLElement => el !== null);
-    if (!sections.length) return;
+  React.useEffect(() => {
+    const desktopNavigation = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    desktopNavigation.addEventListener("change", closeOnDesktop);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      desktopNavigation.removeEventListener("change", closeOnDesktop);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
   }, []);
-
-  const Logo = (
-    <Link
-      href="/"
-      onClick={() => setOpen(false)}
-      className="flex items-center gap-2 font-semibold"
-    >
-      <span className="bg-primary text-primary-foreground grid h-8 w-8 place-items-center rounded-md text-sm font-bold">
-        K
-      </span>
-      <span className="text-base">
-        KurlTech <span className="text-muted-foreground">Systems</span>
-      </span>
-    </Link>
-  );
 
   return (
-    <motion.header
-      initial={{ y: -24, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: EASE }}
+    <header
       className={cn(
-        "border-border bg-background/80 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 border-b backdrop-blur transition-shadow",
-        scrolled && "shadow-sm",
+        "sticky top-0 z-50 transition-colors duration-300",
+        pathname === "/privacy-policy" || isScrolled || open
+          ? "bg-[#0A161A]/95 backdrop-blur-md"
+          : "bg-transparent",
       )}
     >
-      <Container className="flex h-16 items-center justify-between">
-        {Logo}
+      <ScrollProgress />
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
-          {siteConfig.nav.map((item) => {
-            const isActive = active === item.href;
-            return (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={() => setActive(item.href)}
-                className={cn(
-                  "relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
+      <nav
+        aria-label="Main"
+        className="mx-auto flex h-20 max-w-360 items-center justify-between px-6 lg:px-12"
+      >
+        <Link
+          href="/"
+          className="shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
+        >
+          <Image
+            src="/images/svg/logo.svg"
+            alt="Kurltech Systems"
+            width={226}
+            height={57}
+            priority
+            unoptimized
+            className="h-13 w-auto"
+          />
+        </Link>
+
+        <ul className="hidden items-center gap-5 md:flex xl:gap-10">
+          {navItems.map((item) => (
+            <li key={item.label}>
+              <Link
+                href={
+                  item.href.startsWith("#") && pathname !== "/"
+                    ? `/${item.href}`
+                    : item.href
+                }
+                className={linkClasses}
               >
-                {isActive && (
-                  <motion.span
-                    layoutId="nav-active"
-                    className="bg-primary/10 absolute inset-0 -z-10 rounded-full"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
                 {item.label}
-              </a>
-            );
-          })}
-        </nav>
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
-          <a
-            href="#contact"
-            className={buttonVariants({
-              size: "sm",
-              className: "hidden sm:inline-flex",
-            })}
-          >
-            Get in touch
-          </a>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls="mobile-nav"
+          aria-label={open ? "Close menu" : "Open menu"}
+          className="cursor-pointer text-white/85 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60 md:hidden"
+        >
+          {open ? <X className="size-6" /> : <Menu className="size-6" />}
+        </button>
+      </nav>
 
-          <button
-            type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-            className="border-border text-foreground hover:bg-secondary inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors md:hidden"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </Container>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.nav
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: EASE }}
-            className="border-border bg-background overflow-hidden border-t md:hidden"
-          >
-            <Container className="flex flex-col gap-1 py-4">
-              {siteConfig.nav.map((item) => {
-                const isActive = active === item.href;
-                return (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => {
-                      setActive(item.href);
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                    )}
-                  >
-                    {item.label}
-                  </a>
-                );
-              })}
-              <a
-                href="#contact"
+      <div
+        id="mobile-nav"
+        className={cn("md:hidden", open ? "block" : "hidden")}
+      >
+        <ul className="border-accent/12 flex flex-col gap-1 border-t px-6 pt-2 pb-6">
+          {navItems.map((item) => (
+            <li key={item.label}>
+              <Link
+                href={
+                  item.href.startsWith("#") && pathname !== "/"
+                    ? `/${item.href}`
+                    : item.href
+                }
                 onClick={() => setOpen(false)}
-                className={buttonVariants({ size: "sm", className: "mt-2" })}
+                className={cn(linkClasses, "w-full py-3")}
               >
-                Get in touch
-              </a>
-            </Container>
-          </motion.nav>
-        )}
-      </AnimatePresence>
-    </motion.header>
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </header>
   );
 }

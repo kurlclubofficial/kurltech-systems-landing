@@ -1,23 +1,28 @@
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { Hero } from "@/components/sections/hero";
-import { Process } from "@/components/sections/process";
-import { ProductSpotlight } from "@/components/sections/product-spotlight";
-import { Services } from "@/components/sections/services";
-import { Cta } from "@/components/sections/cta";
+import type { Metadata } from "next";
+import ConsultationProcess from "@/components/sections/consultation-process";
+import FeatureShowcase from "@/components/sections/feature-showcase";
+import HeroShowCase from "@/components/sections/hero-showcase";
+import HowWeWork from "@/components/sections/how-we-work";
+import ProductSpotlight from "@/components/sections/product-spotlight";
+import SolutionShowcase from "@/components/sections/solution-showcase";
+import { createPageMetadata } from "@/lib/page-metadata";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Custom Internal Tools for Critical Workflows",
+  description:
+    "KurlTech Systems builds custom internal tools that simplify operations, connect workflows, and help teams work smarter.",
+  path: "/",
+});
 
 export default function HomePage() {
   return (
-    <>
-      <Header />
-      <main>
-        <Hero />
-        <Process />
-        <ProductSpotlight />
-        <Services />
-        <Cta />
-      </main>
-      <Footer />
-    </>
+    <main className="flex min-h-dvh flex-col items-center justify-center">
+      <HeroShowCase />
+      <FeatureShowcase />
+      <SolutionShowcase />
+      <HowWeWork />
+      <ProductSpotlight />
+      <ConsultationProcess />
+    </main>
   );
 }

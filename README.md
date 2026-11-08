@@ -14,6 +14,22 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Enquiry email
+
+The enquiry form sends submissions through Resend. Copy `.env.example` to
+`.env.local`, then set `RESEND_API_KEY` from your Resend account and
+`RESEND_FROM_EMAIL` to an address on a domain verified with Resend.
+`ENQUIRY_TO_EMAIL` is the inbox that receives enquiries. Resend's
+`onboarding@resend.dev` sender is for limited testing; production email
+requires a verified sending domain. Keep the API key private and configure
+these environment variables in your deployment settings as well as locally.
+
+Set `SITE_URL` to the canonical HTTPS origin of the production site (for
+example, `https://your-domain.com`) in the deployment environment at build
+time. It is used for canonical metadata, structured data, `sitemap.xml`, and
+`robots.txt`. Without it, the site deliberately disallows search indexing
+until the production domain is configured.
+
 ## Scripts
 
 | Command         | Description                |

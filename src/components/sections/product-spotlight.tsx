@@ -1,81 +1,92 @@
-import { ArrowUpRight, Check } from "lucide-react";
-import { Container } from "@/components/ui/container";
-import { buttonVariants } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
-import { product } from "@/lib/constants";
+"use client";
 
-export function ProductSpotlight() {
+import { motion, useReducedMotion } from "motion/react";
+import Image from "next/image";
+
+const cardContent = [
+  {
+    title: "A management platform built for gyms",
+    description:
+      "WhatsApp-integrated member reminders and follow-ups, built and used by paying customers.",
+  },
+  {
+    title: "Enterprise experience",
+    description:
+      "Experience building internal tools for manufacturing and FMCG businesses.",
+  },
+];
+
+function ProductSpotlight() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <section id="product" className="bg-[#210d25] py-20 text-white sm:py-28">
-      <Container className="grid items-center gap-14 lg:grid-cols-2">
-        {/* Left — browser mock */}
-        <Reveal x={-40} className="order-2 lg:order-1">
-          <div className="bg-card overflow-hidden rounded-xl border border-white/10 shadow-lg">
-            <div className="border-border bg-secondary flex items-center gap-1.5 border-b px-4 py-3">
-              <span className="bg-accent/70 h-3 w-3 rounded-full" />
-              <span className="bg-muted-foreground/30 h-3 w-3 rounded-full" />
-              <span className="bg-muted-foreground/30 h-3 w-3 rounded-full" />
-              <span className="bg-background text-muted-foreground ml-3 truncate rounded-md px-3 py-1 text-xs">
-                {product.url.replace("https://", "")}
-              </span>
-            </div>
-            <div className="space-y-4 p-6">
-              <div className="flex items-center justify-between">
-                <div className="bg-primary/20 h-6 w-24 rounded" />
-                <div className="bg-muted h-6 w-16 rounded" />
-              </div>
-              <div className="from-primary/25 to-accent/15 h-28 rounded-lg bg-linear-to-br" />
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-muted h-16 rounded-lg" />
-                <div className="bg-muted h-16 rounded-lg" />
-                <div className="bg-muted h-16 rounded-lg" />
-              </div>
-              <div className="bg-muted h-3 w-3/4 rounded" />
-              <div className="bg-muted h-3 w-1/2 rounded" />
-            </div>
-          </div>
-        </Reveal>
-
-        {/* Right — copy */}
-        <Reveal x={40} delay={0.1} className="order-1 lg:order-2">
-          <p className="text-primary text-sm font-semibold tracking-wider uppercase">
-            {product.kicker}
-          </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            {product.name}
+    <section
+      id="our-work"
+      className="flex w-full scroll-mt-20 flex-col items-stretch justify-between gap-12 overflow-hidden bg-[#03060F] py-12 text-white sm:gap-14 sm:py-16 xl:h-[calc(100vh-80px)] xl:min-h-[688px] xl:flex-row xl:items-end xl:gap-[70px] xl:pt-12 xl:pb-0"
+    >
+      <div className="w-full max-w-[657px] px-5 sm:px-8 xl:mt-[60px] xl:mb-[54px] xl:w-[46%] xl:px-0 xl:pl-[47px]">
+        <motion.div
+          className="mb-[48px] flex flex-col gap-[18px] border-b border-[#FFFFFF]/15 pb-[42px]"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.45 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h2 className="font-clash text-[40px] leading-[105%] font-medium sm:text-[52px] lg:text-[62px]">
+            We ship real, working software
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-white/70">
-            {product.description}
+          <p className="text-[16px] font-medium text-[#FFFFFFCC]">
+            Practical products that customers use and pay for today.
           </p>
+        </motion.div>
 
-          <ul className="mt-6 space-y-3">
-            {product.highlights.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="bg-primary/20 text-primary mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full">
-                  <Check className="h-3 w-3" />
-                </span>
-                <span className="text-sm text-white">{item}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-8">
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonVariants({
-                variant: "outline",
-                className:
-                  "border-white/30 text-white hover:border-white/50 hover:bg-white/10 hover:text-white",
-              })}
+        <div className="flex flex-col gap-[18px]">
+          {cardContent.map((item, index) => (
+            <motion.div
+              key={item.title}
+              className="flex flex-col gap-5 rounded-[8px] border border-[#FFFFFF38] bg-[#F5F5F51A] p-5"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.55 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.1 + index * 0.1,
+                ease: "easeOut",
+              }}
             >
-              Visit {product.name}
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          </div>
-        </Reveal>
-      </Container>
+              <h3 className="font-clash text-[28px] leading-[120%] font-medium">
+                {item.title}
+              </h3>
+              <p className="text-[16px] leading-[120%]">{item.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <motion.div
+        className="relative ml-auto w-full max-w-[800px] xl:min-w-0 xl:flex-1"
+        initial={
+          shouldReduceMotion ? false : { opacity: 0, x: 48, scale: 0.98 }
+        }
+        whileInView={{ opacity: 1, x: 0, scale: 1 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.75, delay: 0.15, ease: "easeOut" }}
+      >
+        <Image
+          src="/images/webp/kurlclub-banner.webp"
+          alt="KurlClub gym management dashboard and mobile app showing memberships, payments, and attendance"
+          width={800}
+          height={615}
+          quality={90}
+          className="h-auto w-full"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,#03060F_-43.12%,rgba(3,6,15,0.774304)_12.19%,rgba(3,6,15,0)_100%)]"
+        />
+      </motion.div>
     </section>
   );
 }
+
+export default ProductSpotlight;
