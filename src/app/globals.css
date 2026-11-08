@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — light theme only   [white / black / red]           */
+/* ------------------------------------------------------------------ */
+:root {
+  --radius: 0.5rem;
+
+  --background: #ffffff;
+  --foreground: #051316;
+
+  --card: #ffffff;
+  --card-foreground: #051316;
+
+  --primary: #ec2e3a;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f4f6f6;
+  --secondary-foreground: #051316;
+
+  --muted: #f4f6f6;
+  --muted-foreground: #5b686b;
+
+  --accent: #ec2e3a;
+  --accent-foreground: #ffffff;
+
+  --border: #e4e7e7;
+  --input: #e4e7e7;
+  --ring: #ec2e3a;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* Expose tokens to Tailwind utilities (bg-primary, text-muted, ...)  */
+/* ------------------------------------------------------------------ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
+
+  --font-sans: var(--font-sans);
+}
+
+/* ------------------------------------------------------------------ */
+/* Base styles                                                        */
+/* ------------------------------------------------------------------ */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
